@@ -1,6 +1,5 @@
 const Joi = require('joi');
 const {password} = require('./custom.validation');
-const { query } = require('express');
 
 const register = {
     body:Joi.object().keys({
@@ -17,7 +16,13 @@ const login = {
     }),
 }
 
-const refreshToken = {
+const logout = {
+    body: Joi.object().keys({
+      refreshToken: Joi.string().required(),
+    }),
+  };
+
+const refreshTokens = {
     body:Joi.object().keys({
         refreshToken:Joi.string().required(),
     }),

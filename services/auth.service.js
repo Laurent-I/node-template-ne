@@ -3,6 +3,8 @@ const tokenService = require('./token.service');
 const {Token} = require('../models');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
+const httpStatus = require('http-status');
+const { default: mongoose } = require('mongoose');
 
 // Login with email and password
 const loginWithEmailAndPassword = async(email, password)=>{
@@ -15,11 +17,12 @@ const loginWithEmailAndPassword = async(email, password)=>{
 
 // Logout
 const logout = async(refreshToken)=>{
-    const refreshTokenDoc = await Token.findOne({token: refreshToken, type: tokenTypes.refresh, blacklisted: false});
+    const refreshTokenDoc = await Token.findOne({token: refreshToken, type: tokenTypes.REFRESH, blacklisted: false});
     if(!refreshTokenDoc){
-        throw new ApiError(httpStatus.NOT_FOUND, 'Not found');
+        throw new ApiError(httpStatus.NOT_FOUND, 'Invalid or expired refresh token');
     }
-    await refreshTokenDoc.remove();
+    console.log(refreshTokenDoc instanceof mongoose.Model);
+    await refreshTokenDoc.deleteOne();
 }
 
 // Refresh auth tokens

@@ -4,7 +4,7 @@ const {User} = require('../models')
 const {tokenTypes} = require('./tokens')
 
 const jwtOptions = {
-    secertOrKey: config.jwt.secret,
+    secretOrKey: config.jwt.secret,
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 }
 
@@ -15,8 +15,9 @@ const jwtVerify = async (payload, done)=>{
         }
         const user = await User.findById(payload.sub);
         if (!user) {
-            return done(null, false);
+            return done(null, false, {message: 'User not found'});
         }
+        done(null, user)
     } catch (error) {
         done(error, false);
     }

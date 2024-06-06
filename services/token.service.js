@@ -5,6 +5,7 @@ const config = require('../config/config');
 const userService = require('./user.service');
 const { Token } = require('../models');
 const ApiError = require('../utils/ApiError');
+const httpStatus = require('http-status');
 
 // Generate token
 const generateToken = (userId, expires, type, secret=config.jwt.secret)=>{
@@ -41,12 +42,18 @@ const verifyToken = async(token, type)=>{
 
 // Generate auth tokens
 const generateAuthTokens = async(user)=>{
+    let refreshTokenDoc = await Token.findOne({ user: user._id });
     const accessTokenExpires = moment().add(config.jwt.accessExpirationMinutes, 'minutes');
     const accessToken = generateToken(user.id, accessTokenExpires, tokenTypes.ACCESS);
 
     const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
-    const refreshToken = generateToken(user.id, refreshTokenExpires, tokenTypes.REFRESH);
-    await saveToken(refreshToken, user.id, refreshTokenExpires, tokenTypes.REFRESH);
+    if (!refreshTokenDoc) {
+        const refreshToken = generateToken(user.id, refreshTokenExpires, tokenTypes.REFRESH);
+        await saveToken(refreshToken, user.id, refreshTokenExpires, tokenTypes.REFRESH);
+    
+        refreshTokenDoc = {};
+        refreshTokenDoc.token = refreshToken;
+      }
 
     return {
         access: {
@@ -54,7 +61,7 @@ const generateAuthTokens = async(user)=>{
             expires: accessTokenExpires.toDate(),
         },
         refresh: {
-            token: refreshToken,
+            token: refreshTokenDoc.token,
             expires: refreshTokenExpires.toDate(),
         },
     }
@@ -74,6 +81,7 @@ const generateResetPasswordToken = async(email)=>{
 
 // Generate verify email token
 const generateVerifyEmailToken = async (user) => {
+    console.log(user)
     const expires = moment().add(config.jwt.verifyEmailExpirationMinutes, 'minutes');
     const verifyEmailToken = generateToken(user.id, expires, tokenTypes.VERIFY_EMAIL);
     await saveToken(verifyEmailToken, user.id, expires, tokenTypes.VERIFY_EMAIL);

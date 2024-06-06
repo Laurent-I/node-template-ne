@@ -3,7 +3,6 @@ const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const { roleRights } = require('../config/roles');
 
-// This is an asynchronous function that serves as a callback for Passport.js authentication.
 const verifyCallback = (req, resolve, reject, requiredRights) => async (err, user, info) => {
   if (err || info || !user) {
     return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
@@ -21,13 +20,16 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
   resolve();
 };
 
-// This is a middleware function that checks if the user is authenticated and has the required rights.
 const auth = (...requiredRights) => async (req, res, next) => {
-  return new Promise((resolve, reject) => {
+  new Promise((resolve, reject) => {
     passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject, requiredRights))(req, res, next);
   })
-    .then(() => next())
-    .catch((err) => next(err));
+    .then(() => {
+      next();
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 module.exports = auth;
