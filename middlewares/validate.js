@@ -2,6 +2,8 @@ const Joi = require('joi');
 const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
+// This function returns a middleware function that validates the request object against the schema.
+// If the request object is invalid, it returns an error response.
 
 const validate = (schema) => (req, res, next) => {
     const validSchema = pick(schema, ['params', 'query', 'body']);
@@ -17,3 +19,5 @@ const validate = (schema) => (req, res, next) => {
     Object.assign(req, value);
     return next();
 }
+
+module.exports = validate;
