@@ -29,7 +29,7 @@ const envVarsSchema = Joi.object()
     MYSQL_HOST: Joi.string().description('mysql host'),
     MYSQL_PORT: Joi.number().description('mysql port'),
     MYSQL_USER: Joi.string().description('mysql user'),
-    MYSQL_PASSWORD: Joi.string().description('mysql password'),
+    MYSQL_PASSWORD: Joi.optional().description('mysql password'),
     MYSQL_DATABASE: Joi.string().description('mysql database'),
     //postgres
     POSTGRES_HOST: Joi.string().description('postgres host'),

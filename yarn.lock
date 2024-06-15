@@ -744,6 +744,11 @@
   dependencies:
     debug "^4.3.1"
 
+"@prisma/client@^5.15.0":
+  version "5.15.0"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-5.15.0.tgz#a9443ace9b8a8d57aff70647168e95f2f55c5dc9"
+  integrity sha512-wPTeTjbd2Q0abOeffN7zCDCbkp9C9cF+e9HPiI64lmpehyq2TepgXE+sY7FXr7Rhbb21prLMnhXX27/E11V09w==
+
 "@sideway/address@^4.1.5":
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@sideway/address/-/address-4.1.5.tgz#4bc149a0076623ced99ca8208ba780d65a99b9d5"
