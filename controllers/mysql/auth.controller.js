@@ -4,8 +4,9 @@ const {
   authService,
   userService,
   tokenService,
-  emailService,
 } = require("../../services/mysql");
+
+const { emailService } = require('../../services');
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);

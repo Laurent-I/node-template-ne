@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
-const {MsqlUser} = require('../models');
-const ApiError = require('../utils/ApiError');
+const {MsqlUser} = require('../../models');
+const ApiError = require('../../utils/ApiError');
 
 // Create a new user
 const createUser = async (userBody) => {

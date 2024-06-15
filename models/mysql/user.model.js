@@ -23,12 +23,12 @@ class User extends Model {
       return [key, order.toUpperCase()];
     });
 
-    const {count, rows} = await this.findAndCountAll({
+    const { count, rows } = await this.findAndCountAll({
       where: filter,
       order,
       limit: pageSize,
       offset: (page - 1) * pageSize,
-      include: populate.split(",").map(association => ({association}))
+      include: populate.split(",").map((association) => ({ association })),
     });
 
     return {
@@ -36,8 +36,7 @@ class User extends Model {
       items: rows,
       totalPages: Math.ceil(count / pageSize),
       currentPage: page,
-
-    }
+    };
   }
 
   async isPasswordMatch(password) {
@@ -65,10 +64,8 @@ User.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      trim: true,
       validate: {
         notContains: "password",
-        is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
       },
     },
     role: {

@@ -1,6 +1,6 @@
 const userService = require('./user.service');
 const tokenService = require('./token.service');
-const {Token} = require('../../models');
+const {MsqlToken} = require('../../models');
 const ApiError = require('../../utils/ApiError');
 const { tokenTypes } = require('../../config/tokens');
 const httpStatus = require('http-status');
@@ -17,7 +17,7 @@ const loginWithEmailAndPassword = async(email, password)=>{
 
 // Logout
 const logout = async(refreshToken)=>{
-    const refreshTokenDoc = await Token.findOne({token: refreshToken, type: tokenTypes.REFRESH, blacklisted: false});
+    const refreshTokenDoc = await MsqlToken.findOne({token: refreshToken, type: tokenTypes.REFRESH, blacklisted: false});
     if(!refreshTokenDoc){
         throw new ApiError(httpStatus.NOT_FOUND, 'Invalid or expired refresh token');
     }
@@ -44,13 +44,15 @@ const refreshAuth = async (refreshToken) => {
 const resetPassword = async (resetPasswordToken, newPassword) => {
     try {
       const resetPasswordTokenDoc = await tokenService.verifyToken(resetPasswordToken, tokenTypes.RESET_PASSWORD);
-      const user = await userService.getUserById(resetPasswordTokenDoc.user);
+      console.log(resetPasswordTokenDoc.dataValues.userId)
+      const user = await userService.getUserById(resetPasswordTokenDoc.dataValues.userId);
       if (!user) {
         throw new Error();
       }
       await userService.updateUserById(user.id, { password: newPassword });
-      await Token.destroy({where: {user: user.id, type: tokenTypes.RESET_PASSWORD}});
+      await MsqlToken.destroy({where: {userId: user.id, type: tokenTypes.RESET_PASSWORD}});
     } catch (error) {
+      console.log(error)
       throw new ApiError(httpStatus.UNAUTHORIZED, 'Password reset failed');
     }
   };
@@ -63,7 +65,7 @@ const resetPassword = async (resetPasswordToken, newPassword) => {
         if (!user) {
           throw new Error();
         }
-        await Token.destroy({where: {user: user.id, type: tokenTypes.VERIFY_EMAIL}});
+        await MsqlToken.destroy({where: {userId: user.id, type: tokenTypes.VERIFY_EMAIL}});
         await userService.updateUserById(user.id, { isEmailVerified: true });
     }
     catch (error) {
@@ -76,5 +78,5 @@ module.exports = {
     logout,
     refreshAuth,
     resetPassword,
-    verifyEmail
+    verifyEmail,
 };
