@@ -9,7 +9,10 @@ const httpStatus = require('http-status');
 // Login with email and password
 const loginWithEmailAndPassword = async(email, password)=>{
     const user = await userService.getUserByEmail(email);
+     
     if(!user || !(await user.isPasswordMatch(password))){
+      // console.log(user)
+      // console.log(IsPasswordMatch)
         throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
     }
     return user;
@@ -21,7 +24,6 @@ const logout = async(refreshToken)=>{
     if(!refreshTokenDoc){
         throw new ApiError(httpStatus.NOT_FOUND, 'Invalid or expired refresh token');
     }
-    console.log(refreshTokenDoc instanceof mongoose.Model);
     await refreshTokenDoc.destroy({force: true});
 }
 

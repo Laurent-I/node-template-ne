@@ -5,17 +5,30 @@ const {
   userService,
   tokenService,
 } = require("../../services/mysql");
+const Sequelize = require('sequelize');
 
 const { emailService } = require('../../services');
 
 const register = catchAsync(async (req, res) => {
-  const user = await userService.createUser(req.body);
-  const tokens = await tokenService.generateAuthTokens(user);
-  res.status(httpStatus.CREATED).send({ user, tokens });
+  try {
+    const user = await userService.createUser(req.body);
+    const tokens = await tokenService.generateAuthTokens(user);
+    res.status(httpStatus.CREATED).send({ user, tokens });
+  } catch (error) {
+    if (error instanceof Sequelize.UniqueConstraintError) {
+      res.status(httpStatus.BAD_REQUEST).send({
+        message: 'Email already exists',
+        fields: error.fields,
+      });
+    } else {
+      throw error;
+    }
+  }
 });
 
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
+  console.log(email, password)
   const user = await authService.loginWithEmailAndPassword(email, password);
   const tokens = await tokenService.generateAuthTokens(user);
   res.send({ user, tokens });
